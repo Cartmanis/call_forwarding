@@ -11,7 +11,7 @@ import (
 )
 
 //ReadConfig чтение конфигурационного файла ini, если файла не существует он создается со значениями по умолчанию и сообщением выхода из программы
-func ReadConfig() ([]*models.Settings,error) {
+func ReadConfig() ([]*models.Settings, error) {
 	data, err := ioutil.ReadFile("config.conf")
 	if err != nil {
 		return nil, err
@@ -29,37 +29,51 @@ func ReadConfig() ([]*models.Settings,error) {
 		if strings.Trim(a, " ") == "" {
 			continue
 		}
-		arr := strings.Split(a, " ")
-		if len(arr) < 4 {
+		main, comment := mainSplitComment(a)
+		if main == "" {
+			return nil, fmt.Errorf("empty settings for main")
+		}
+		arr := strings.Split(a, "#")
+		if len(arr) == 0 {
 			return nil, fmt.Errorf("not valid config.conf. Example one rows: '192.168.41.26 9039 11.0.0.35 3050 #Гурьевская городская больница'")
 		}
 		portListner, err := strconv.Atoi(arr[1])
 		if err != nil {
-			return nil, fmt.Errorf("port for listner not integer: %v",err)
+			return nil, fmt.Errorf("port for listner not integer: %v", err)
 		}
 		portForward, err := strconv.Atoi(arr[3])
 		if err != nil {
-			return nil, fmt.Errorf("port for forward not integer: %v",err)
+			return nil, fmt.Errorf("port for forward not integer: %v", err)
 		}
 		s := &models.Settings{
 			ListnerIP:   arr[0],
 			ListnerPort: portListner,
 			ForwardIP:   arr[2],
 			ForwardPort: portForward,
-			Comment:     getComment(arr),
+			Comment:     comment,
 		}
 		listSettings = append(listSettings, s)
 	}
 	return listSettings, nil
 }
 
-func getComment(arr []string) string {
-	comment := ""
-	for i := 4; i < len(arr); i++ {
-		row := strings.Trim(arr[i], " ")
-		if len(row) > 1 && string(row[0]) == "#" {
-			comment = row[1:]
+func mainSplitComment(row string) (string, string) {
+	arr := strings.Split(row, "#")
+	if len(arr) <= 0 {
+		return "", ""
+	}
+	if len(arr) == 1 {
+		return arr[0], ""
+	}
+	if len(arr) == 2 {
+		return arr[0], arr[1]
+	}
+	if len(arr) > 2 {
+		for i := 1; i < len(arr); i++ {
+			if strings.Trim(arr[i], " ") != "" && strings.Trim(arr[i]) != "#" {
+				return arr[0], arr[i]
+			}
 		}
 	}
-	return comment
+	return "", ""
 }
