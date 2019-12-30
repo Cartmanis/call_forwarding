@@ -41,18 +41,18 @@ func NewForward(s *models.Settings) (*Forward, error) {
 	return &Forward{s, listner}, nil
 }
 
-//StartListner - запусе для одной переадресации
+//StartListner - запуск для одной переадресации
 func (f *Forward) StartListner() {
 	for {
 		connListner, err := f.l.Accept()
 		if err != nil {
-			logger.Error("failed to accept lisner in %s: %v",
+			logger.Errorf("failed to accept lisner in %s: %v",
 				fmt.Sprintf("%s:%d", f.s.ListnerIP, f.s.ListnerPort), err)
 			continue
 		}
 		defer connListner.Close()
 		if err := f.forward(connListner); err != nil {
-			logger.Error("failed to forward in %s: %v",
+			logger.Errorf("failed to forward in %s: %v",
 				fmt.Sprintf("%s:%d", f.s.ForwardIP, f.s.ForwardPort), err)
 		}		
 	}
