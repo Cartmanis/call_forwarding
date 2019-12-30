@@ -64,7 +64,7 @@ func ReadConfig(pathConf string) ([]*models.Settings, error) {
 	return listSettings, nil
 }
 
-//ReadConfIni подключение, использующее бибилиотеку gopkg.in/ini.v1
+//ReadConfIni подключение, использующее библиотеку gopkg.in/ini.v1
 func ReadConfIni() ([]*models.Settings, error) {
 	data, err := ioutil.ReadFile("config.ini")
 	if err != nil {
