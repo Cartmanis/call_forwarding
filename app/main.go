@@ -9,9 +9,9 @@ import (
 )
 
 func main() {	
-
+	path := getPath()
 	c := make(chan int)
-	sList, err := config.ReadConfig("config.conf")
+	sList, err := config.ReadConfig(path)
 	if err != nil {
 		logger.Fatal("не удалось прочитать конфигурационный файл: ", err)
 	}
@@ -24,6 +24,7 @@ func main() {
 		}
 		go f.StartListner()
 	}
+	logger.Info("call_forwarding успешно запущен")
 	<-c
 }
 
