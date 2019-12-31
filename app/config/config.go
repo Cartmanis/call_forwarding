@@ -42,8 +42,8 @@ func ReadConfig(pathConf string) ([]*models.Settings, error) {
 		forwardIP := strings.Trim(arrMain[2], " ")
 		portListn := strings.Trim(arrMain[1], " ")
 		portForw := strings.Trim(arrMain[3], " ")
-		portListn = strings.Trim(portListn, "/r")
-		portForw = strings.Trim(portForw, "/r")
+		portListn = strings.Trim(portListn, "\r")
+		portForw = strings.Trim(portForw, "\r")
 		portListner, err := strconv.Atoi(portListn)
 		if err != nil {
 			return nil, fmt.Errorf("port for listner not integer: %v", err)
